@@ -1,0 +1,76 @@
+[gd_scene load_steps=9 format=3 uid="uid://crb3edancq30l"]
+
+[ext_resource type="Shader" path="res://gradient.gdshader" id="1_5g2h0"]
+[ext_resource type="Texture2D" uid="uid://dccqmpeaax4gn" path="res://icon.svg" id="1_omihr"]
+[ext_resource type="Shader" path="res://dither.gdshader" id="1_y2fud"]
+[ext_resource type="Texture2D" uid="uid://c6kd4yvxxpi0g" path="res://images/5.3.01.png" id="3_exs8i"]
+[ext_resource type="Texture2D" uid="uid://c6aguaof544su" path="res://images/third_moment.png" id="4_5j1eq"]
+[ext_resource type="Texture2D" uid="uid://c8jgqlc3qvyw6" path="res://images/computer_greyscale.png" id="5_loxqv"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_n2s2e"]
+shader = ExtResource("1_5g2h0")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_18gsh"]
+shader = ExtResource("1_y2fud")
+shader_parameter/enable = true
+shader_parameter/use_time = false
+shader_parameter/hard_clipping = true
+shader_parameter/show_unquantized = false
+shader_parameter/show_error = false
+shader_parameter/perceptual_error = false
+shader_parameter/bit_depth = 3
+shader_parameter/midriser = true
+shader_parameter/dither = true
+shader_parameter/subtractive = true
+shader_parameter/noise_order = 1
+
+[node name="Control" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = -1152.0
+offset_bottom = -648.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Background" type="CanvasLayer" parent="."]
+
+[node name="Gradient" type="ColorRect" parent="Background"]
+material = SubResource("ShaderMaterial_n2s2e")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Images" type="CanvasLayer" parent="."]
+
+[node name="Logo" type="Sprite2D" parent="Images"]
+position = Vector2(153, 114)
+texture = ExtResource("1_omihr")
+
+[node name="Male" type="Sprite2D" parent="Images"]
+position = Vector2(811, 326)
+texture = ExtResource("3_exs8i")
+
+[node name="Third Moment" type="Sprite2D" parent="Images"]
+position = Vector2(391, 116)
+scale = Vector2(0.25, 0.25)
+texture = ExtResource("4_5j1eq")
+
+[node name="Computer" type="Sprite2D" parent="Images"]
+position = Vector2(266, 404)
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("5_loxqv")
+
+[node name="Dither Layer" type="CanvasLayer" parent="."]
+
+[node name="Dither" type="ColorRect" parent="Dither Layer"]
+material = SubResource("ShaderMaterial_18gsh")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+metadata/_edit_lock_ = true
