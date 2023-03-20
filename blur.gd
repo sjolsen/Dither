@@ -17,11 +17,11 @@ func _ready() -> void:
 	changed.emit()
 
 func _update_uniforms() -> void:
-	var weights := _compute_weights(sigma)
+	var weights := _compute_weights()
 	$Horizontal.update_uniforms(enable, weights)
 	$Vertical.update_uniforms(enable, weights)
 
-func _compute_weights(sigma: float) -> Array[float]:
+func _compute_weights() -> Array[float]:
 	var n_weights := ceili(3.0 * sigma)
 	var weights := [] as Array[float]
 	weights.resize(n_weights)
