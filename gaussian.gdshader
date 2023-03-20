@@ -12,9 +12,9 @@ void fragment() {
 	vec4 value = vec4(0.0);
 	float total = 0.0;
 	for (int i = 0; i < n_weights; ++i) {
-		vec2 d = direction * SCREEN_PIXEL_SIZE;
-		value += weights[i] * texture(screen_texture, SCREEN_UV + d * float(i));
-		value += weights[i] * texture(screen_texture, SCREEN_UV - d * float(i));
+		vec2 offset = float(1 + i) * direction * SCREEN_PIXEL_SIZE;
+		value += weights[i] * texture(screen_texture, SCREEN_UV + offset);
+		value += weights[i] * texture(screen_texture, SCREEN_UV - offset);
 		total += 2.0 * weights[i];
 	}
 	value += (1.0 - total) * texture(screen_texture, SCREEN_UV);
