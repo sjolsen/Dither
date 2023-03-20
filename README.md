@@ -28,6 +28,11 @@ The post-processing shader has several configuration options exposed as uniforms
 
 The default settings, following the paper's terminology, are to quantize to three bits using a subtractive dither scheme and RPDF dither (see Figure 2.7 from the paper). The default schene includes a Y-space gradient, an L*-space gradient, Figure 2.4 from the paper (the greyscale image of a computer monitor and keyboard), Figure 2.13 from the paper (the third-moment test image), test image "Male" from the "misc" collection in the USC-SIPI database, and the Godot logo.
 
+Post-dither Gaussian blur can be configured from the inspector view for the Blur Layer node. The settings are:
+
+* Enable: Toggles blur on and off.
+* Sigma: Sets the bandwidth of the filter. The value corresponds to the sigma term of the standard Gaussian equation (in pixels).
+
 ## TODO
 
 * Perceptually uniform quantization

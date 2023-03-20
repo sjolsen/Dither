@@ -1,6 +1,6 @@
 shader_type canvas_item;
 
-#include "color.gdshaderinc"
+#include "res://color.gdshaderinc"
 
 uniform sampler2D screen_texture : hint_screen_texture, repeat_disable, filter_nearest;
 uniform bool enable = true;
@@ -59,8 +59,8 @@ float quantize(float x, float noise) {
 }
 
 void fragment() {
-	uvec2 xy = uvec2(vec2(SCREEN_UV.x / SCREEN_PIXEL_SIZE.x,
-	                      SCREEN_UV.y / SCREEN_PIXEL_SIZE.y));
+	if (!enable) discard;
+	uvec2 xy = uvec2(SCREEN_UV / SCREEN_PIXEL_SIZE);
 	float noise = sample_noise(xy);
 	vec3 raw = texture(screen_texture, SCREEN_UV).rgb;
 	float x = compress(luminance(raw));
@@ -69,5 +69,5 @@ void fragment() {
 	float ep = lstar_to_y(0.5 + y_to_lstar(y) - y_to_lstar(x));
 	float err = perceptual_error ? ep : e;
 	float l = show_error ? err : y;
-	COLOR.rgb = enable ? vec3(l) : raw;
+	COLOR.rgb = vec3(l);
 }

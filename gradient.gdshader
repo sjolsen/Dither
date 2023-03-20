@@ -1,6 +1,6 @@
 shader_type canvas_item;
 
-#include "color.gdshaderinc"
+#include "res://color.gdshaderinc"
 
 void fragment() {
 	if (UV.y > 0.5) {

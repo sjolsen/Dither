@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3 uid="uid://crb3edancq30l"]
+[gd_scene load_steps=14 format=3 uid="uid://c3dt8t2npy7wa"]
 
 [ext_resource type="Shader" path="res://gradient.gdshader" id="1_5g2h0"]
 [ext_resource type="Texture2D" uid="uid://dccqmpeaax4gn" path="res://icon.svg" id="1_omihr"]
@@ -6,6 +6,9 @@
 [ext_resource type="Texture2D" uid="uid://c6kd4yvxxpi0g" path="res://images/5.3.01.png" id="3_exs8i"]
 [ext_resource type="Texture2D" uid="uid://c6aguaof544su" path="res://images/third_moment.png" id="4_5j1eq"]
 [ext_resource type="Texture2D" uid="uid://c8jgqlc3qvyw6" path="res://images/computer_greyscale.png" id="5_loxqv"]
+[ext_resource type="Script" path="res://blur.gd" id="7_cbdk4"]
+[ext_resource type="Shader" path="res://gaussian.gdshader" id="7_j3ikd"]
+[ext_resource type="Script" path="res://blur_pass.gd" id="9_q5nq4"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_n2s2e"]
 shader = ExtResource("1_5g2h0")
@@ -23,6 +26,22 @@ shader_parameter/midriser = true
 shader_parameter/dither = true
 shader_parameter/subtractive = true
 shader_parameter/noise_order = 1
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_eviie"]
+resource_name = "Horizontal Blur"
+shader = ExtResource("7_j3ikd")
+shader_parameter/enable = false
+shader_parameter/direction = Vector2(1, 0)
+shader_parameter/weights = PackedFloat32Array()
+shader_parameter/n_weights = 0
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_elgvm"]
+resource_name = "Vertical Blur"
+shader = ExtResource("7_j3ikd")
+shader_parameter/enable = false
+shader_parameter/direction = Vector2(0, 1)
+shader_parameter/weights = null
+shader_parameter/n_weights = 0
 
 [node name="Control" type="Control"]
 layout_mode = 3
@@ -43,6 +62,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+metadata/_edit_lock_ = true
 
 [node name="Images" type="CanvasLayer" parent="."]
 
@@ -73,4 +93,29 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+metadata/_edit_lock_ = true
+
+[node name="Blur Layer" type="CanvasLayer" parent="."]
+script = ExtResource("7_cbdk4")
+
+[node name="Horizontal" type="ColorRect" parent="Blur Layer"]
+material = SubResource("ShaderMaterial_eviie")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("9_q5nq4")
+metadata/_edit_lock_ = true
+
+[node name="BackBufferCopy" type="BackBufferCopy" parent="Blur Layer"]
+
+[node name="Vertical" type="ColorRect" parent="Blur Layer"]
+material = SubResource("ShaderMaterial_elgvm")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("9_q5nq4")
 metadata/_edit_lock_ = true
