@@ -18,9 +18,9 @@ The post-processing shader has several configuration options exposed as uniforms
   * Clipping (checked): Input values are clipped to a safe range. Contrast is retained, but shadow and highlight details are lost.
 * Show Unquantized: Skip quantization and subsequent steps, showing the output of clipping/compression.
 * Show Error: Replace the image with the total quantization error.
-* Perceptual Error: The total quantization error is added to a mid grey and replaces the image. This is done in one of two ways:
-  * Unchecked (Y-space): The paper renders the error by adding it to 50% luminosity grey. Due to the nonlinearity of the human eye, this underemphasizes error in dark portions of the image and overemphasizes error in light portions of the image.
-  * Checked (L*-space): The error is computed as the difference in perceptual lightness and added to 50% perceived lightness grey (i.e. "18% grey").
+* Perceptual Error: The magnitude of the quantization error is scaled against the largest possible error and displayed in L*-space (black being no error, white being the greatest possible error). The quantization error is computed in two ways:
+  * Unchecked: The error is computed in Y-space. Note: the paper renders the error by adding it to 50% luminosity grey. Due to the nonlinearity of the human eye, this underemphasizes error in dark portions of the image and overemphasizes error in light portions of the image.
+  * Checked: The error is computed in L*-space.
 * Midriser: Selects between the two quantizer formulas described by the paper. When unchecked, the midtread quantizer is used instead.
 * Dither: Unchecking this turns off dithering but leaves greyscale conversion and quantization enabled.
 * Subtractive: Controls whether the dither noise is subtracted from the quantizer output.
