@@ -65,8 +65,10 @@ void fragment() {
 	vec3 raw = texture(screen_texture, SCREEN_UV).rgb;
 	float x = compress(luminance(raw));
 	float y = show_unquantized ? x : quantize(x, noise);
-	float e = 0.5 + y - x;
-	float ep = lstar_to_y(0.5 + y_to_lstar(y) - y_to_lstar(x));
+	float emax = delta / 2.0;
+	float e = y_to_lstar(abs(y - x) / emax);
+	float epmax = y_to_lstar(emax);
+	float ep = abs(y_to_lstar(y) - y_to_lstar(x)) / epmax;
 	float err = perceptual_error ? ep : e;
 	float l = show_error ? err : y;
 	COLOR.rgb = vec3(l);
