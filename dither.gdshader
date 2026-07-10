@@ -7,6 +7,7 @@ uniform bool enable = true;
 
 group_uniforms ExperimentalSetup;
 uniform bool use_time = false;
+uniform bool dynamic_range_compression = false;
 uniform bool show_error = false;
 group_uniforms;
 
@@ -17,6 +18,7 @@ uniform int noise_order : hint_range(1, 3) = 1;
 group_uniforms;
 
 #define delta (1.0 / float((1u << bit_depth) - 1u))
+#define noise_max (float(noise_order) * delta / 2.0)
 
 uvec3 pcg3d(uvec3 v) {
 	v = v * 1664525u + 1013904223u;
@@ -37,6 +39,10 @@ float sample_noise(uvec2 xy) {
 	return result;
 }
 
+float compress(float x) {
+	return dynamic_range_compression ? mix(noise_max, 1.0 - noise_max, x) : x;
+}
+
 float quantize(float x, float noise) {
 	float v = dither ? noise * delta : 0.0;
 	float y = delta * floor((x + v)/delta + 0.5);
@@ -48,9 +54,9 @@ void fragment() {
 	uvec2 xy = uvec2(SCREEN_UV / SCREEN_PIXEL_SIZE);
 	float noise = sample_noise(xy);
 	vec3 raw = texture(screen_texture, SCREEN_UV).rgb;
-	float x = luminance(raw);
+	float x = compress(luminance(raw));
 	float y = quantize(x, noise);
-	float err = 0.5 + (y - x);
+	float err = noise_max + (y - x);
 	float l = show_error ? err : y;
 	COLOR.rgb = vec3(l);
 }
