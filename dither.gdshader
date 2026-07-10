@@ -15,7 +15,6 @@ group_uniforms;
 
 group_uniforms QuantizerSettings;
 uniform uint bit_depth = 3;
-uniform bool midriser = true;
 uniform bool dither = true;
 uniform bool subtractive = true;
 uniform int noise_order : hint_range(1, 3) = 1;
@@ -52,9 +51,7 @@ float compress(float x) {
 
 float quantize(float x, float noise) {
 	float v = dither ? noise * delta : 0.0;
-	float y_midtread = delta * floor((x + v)/delta + 0.5);
-	float y_midriser = delta * (floor((x + v)/delta) + 0.5);
-	float y = midriser ? y_midriser : y_midtread;
+	float y = delta * floor((x + v)/delta + 0.5);
 	return clamp(subtractive ? y - v : y, 0.0, 1.0);
 }
 

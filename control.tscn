@@ -22,7 +22,6 @@ shader_parameter/show_unquantized = false
 shader_parameter/show_error = false
 shader_parameter/perceptual_error = false
 shader_parameter/bit_depth = 3
-shader_parameter/midriser = true
 shader_parameter/dither = true
 shader_parameter/subtractive = true
 shader_parameter/noise_order = 1
