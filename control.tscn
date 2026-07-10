@@ -1,14 +1,14 @@
-[gd_scene load_steps=14 format=3 uid="uid://c3dt8t2npy7wa"]
+[gd_scene format=3 uid="uid://c3dt8t2npy7wa"]
 
-[ext_resource type="Shader" path="res://gradient.gdshader" id="1_5g2h0"]
+[ext_resource type="Shader" uid="uid://cwfgilfbovpte" path="res://gradient.gdshader" id="1_5g2h0"]
 [ext_resource type="Texture2D" uid="uid://dccqmpeaax4gn" path="res://icon.svg" id="1_omihr"]
-[ext_resource type="Shader" path="res://dither.gdshader" id="1_y2fud"]
+[ext_resource type="Shader" uid="uid://c8hyf831j6bd2" path="res://dither.gdshader" id="1_y2fud"]
 [ext_resource type="Texture2D" uid="uid://c6kd4yvxxpi0g" path="res://images/5.3.01.png" id="3_exs8i"]
 [ext_resource type="Texture2D" uid="uid://c6aguaof544su" path="res://images/third_moment.png" id="4_5j1eq"]
 [ext_resource type="Texture2D" uid="uid://c8jgqlc3qvyw6" path="res://images/computer_greyscale.png" id="5_loxqv"]
-[ext_resource type="Script" path="res://blur.gd" id="7_cbdk4"]
-[ext_resource type="Shader" path="res://gaussian.gdshader" id="7_j3ikd"]
-[ext_resource type="Script" path="res://blur_pass.gd" id="9_q5nq4"]
+[ext_resource type="Script" uid="uid://bexsnmo1n08l4" path="res://blur.gd" id="7_cbdk4"]
+[ext_resource type="Shader" uid="uid://byfdc47a4aqxh" path="res://gaussian.gdshader" id="7_j3ikd"]
+[ext_resource type="Script" uid="uid://bvyr7n1ctn5c5" path="res://blur_pass.gd" id="9_q5nq4"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_n2s2e"]
 shader = ExtResource("1_5g2h0")
@@ -40,10 +40,10 @@ resource_name = "Vertical Blur"
 shader = ExtResource("7_j3ikd")
 shader_parameter/enable = false
 shader_parameter/direction = Vector2(0, 1)
-shader_parameter/weights = null
+shader_parameter/weights = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 shader_parameter/n_weights = 0
 
-[node name="Control" type="Control"]
+[node name="Control" type="Control" unique_id=2122978143]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -53,9 +53,9 @@ offset_bottom = -648.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="Background" type="CanvasLayer" parent="."]
+[node name="Background" type="CanvasLayer" parent="." unique_id=2066992681]
 
-[node name="Gradient" type="ColorRect" parent="Background"]
+[node name="Gradient" type="ColorRect" parent="Background" unique_id=1019614121]
 material = SubResource("ShaderMaterial_n2s2e")
 anchors_preset = 15
 anchor_right = 1.0
@@ -64,29 +64,29 @@ grow_horizontal = 2
 grow_vertical = 2
 metadata/_edit_lock_ = true
 
-[node name="Images" type="CanvasLayer" parent="."]
+[node name="Images" type="CanvasLayer" parent="." unique_id=1223811146]
 
-[node name="Logo" type="Sprite2D" parent="Images"]
+[node name="Logo" type="Sprite2D" parent="Images" unique_id=398637549]
 position = Vector2(153, 114)
 texture = ExtResource("1_omihr")
 
-[node name="Male" type="Sprite2D" parent="Images"]
+[node name="Male" type="Sprite2D" parent="Images" unique_id=36123961]
 position = Vector2(811, 326)
 texture = ExtResource("3_exs8i")
 
-[node name="Third Moment" type="Sprite2D" parent="Images"]
+[node name="Third Moment" type="Sprite2D" parent="Images" unique_id=1565467320]
 position = Vector2(391, 116)
 scale = Vector2(0.25, 0.25)
 texture = ExtResource("4_5j1eq")
 
-[node name="Computer" type="Sprite2D" parent="Images"]
+[node name="Computer" type="Sprite2D" parent="Images" unique_id=8484486]
 position = Vector2(266, 404)
 scale = Vector2(0.5, 0.5)
 texture = ExtResource("5_loxqv")
 
-[node name="Dither Layer" type="CanvasLayer" parent="."]
+[node name="Dither Layer" type="CanvasLayer" parent="." unique_id=2119902855]
 
-[node name="Dither" type="ColorRect" parent="Dither Layer"]
+[node name="Dither" type="ColorRect" parent="Dither Layer" unique_id=1876724222]
 material = SubResource("ShaderMaterial_18gsh")
 anchors_preset = 15
 anchor_right = 1.0
@@ -95,10 +95,10 @@ grow_horizontal = 2
 grow_vertical = 2
 metadata/_edit_lock_ = true
 
-[node name="Blur Layer" type="CanvasLayer" parent="."]
+[node name="Blur Layer" type="CanvasLayer" parent="." unique_id=337001181]
 script = ExtResource("7_cbdk4")
 
-[node name="Horizontal" type="ColorRect" parent="Blur Layer"]
+[node name="Horizontal" type="ColorRect" parent="Blur Layer" unique_id=1348588580]
 material = SubResource("ShaderMaterial_eviie")
 anchors_preset = 15
 anchor_right = 1.0
@@ -108,10 +108,10 @@ grow_vertical = 2
 script = ExtResource("9_q5nq4")
 metadata/_edit_lock_ = true
 
-[node name="BackBufferCopy" type="BackBufferCopy" parent="Blur Layer"]
+[node name="BackBufferCopy" type="BackBufferCopy" parent="Blur Layer" unique_id=400051104]
 copy_mode = 2
 
-[node name="Vertical" type="ColorRect" parent="Blur Layer"]
+[node name="Vertical" type="ColorRect" parent="Blur Layer" unique_id=735392780]
 material = SubResource("ShaderMaterial_elgvm")
 anchors_preset = 15
 anchor_right = 1.0
