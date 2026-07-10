@@ -20,7 +20,6 @@ shader_parameter/use_time = false
 shader_parameter/show_error = false
 shader_parameter/bit_depth = 3
 shader_parameter/dither = true
-shader_parameter/subtractive = true
 shader_parameter/noise_order = 1
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_eviie"]

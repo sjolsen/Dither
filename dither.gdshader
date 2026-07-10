@@ -13,7 +13,6 @@ group_uniforms;
 group_uniforms QuantizerSettings;
 uniform uint bit_depth = 3;
 uniform bool dither = true;
-uniform bool subtractive = true;
 uniform int noise_order : hint_range(1, 3) = 1;
 group_uniforms;
 
@@ -41,7 +40,7 @@ float sample_noise(uvec2 xy) {
 float quantize(float x, float noise) {
 	float v = dither ? noise * delta : 0.0;
 	float y = delta * floor((x + v)/delta + 0.5);
-	return clamp(subtractive ? y - v : y, 0.0, 1.0);
+	return clamp(y, 0.0, 1.0);
 }
 
 void fragment() {
