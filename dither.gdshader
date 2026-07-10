@@ -7,8 +7,6 @@ uniform bool enable = true;
 
 group_uniforms ExperimentalSetup;
 uniform bool use_time = false;
-uniform bool hard_clipping = true;
-uniform bool show_unquantized = false;
 uniform bool show_error = false;
 uniform bool perceptual_error = false;
 group_uniforms;
@@ -41,14 +39,6 @@ float sample_noise(uvec2 xy) {
 	return result;
 }
 
-float compress(float x) {
-	float headroom = 0.5 * float(noise_order) * delta;
-	float a = 1.0 - 2.0 * headroom;
-	float compressed = 0.5 + a * (x - 0.5);
-	float clipped = clamp(x, headroom, 1.0 - headroom);
-	return hard_clipping ? clipped : compressed;
-}
-
 float quantize(float x, float noise) {
 	float v = dither ? noise * delta : 0.0;
 	float y = delta * floor((x + v)/delta + 0.5);
@@ -60,8 +50,8 @@ void fragment() {
 	uvec2 xy = uvec2(SCREEN_UV / SCREEN_PIXEL_SIZE);
 	float noise = sample_noise(xy);
 	vec3 raw = texture(screen_texture, SCREEN_UV).rgb;
-	float x = compress(luminance(raw));
-	float y = show_unquantized ? x : quantize(x, noise);
+	float x = luminance(raw);
+	float y = quantize(x, noise);
 	float emax = delta / 2.0;
 	float e = y_to_lstar(abs(y - x) / emax);
 	float epmax = y_to_lstar(emax);
