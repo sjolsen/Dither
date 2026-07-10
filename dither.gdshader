@@ -8,7 +8,6 @@ uniform bool enable = true;
 group_uniforms ExperimentalSetup;
 uniform bool use_time = false;
 uniform bool show_error = false;
-uniform bool perceptual_error = false;
 group_uniforms;
 
 group_uniforms QuantizerSettings;
@@ -52,11 +51,7 @@ void fragment() {
 	vec3 raw = texture(screen_texture, SCREEN_UV).rgb;
 	float x = luminance(raw);
 	float y = quantize(x, noise);
-	float emax = delta / 2.0;
-	float e = y_to_lstar(abs(y - x) / emax);
-	float epmax = y_to_lstar(emax);
-	float ep = abs(y_to_lstar(y) - y_to_lstar(x)) / epmax;
-	float err = perceptual_error ? ep : e;
+	float err = 0.5 + (y - x);
 	float l = show_error ? err : y;
 	COLOR.rgb = vec3(l);
 }

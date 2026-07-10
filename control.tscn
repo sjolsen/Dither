@@ -18,7 +18,6 @@ shader = ExtResource("1_y2fud")
 shader_parameter/enable = true
 shader_parameter/use_time = false
 shader_parameter/show_error = false
-shader_parameter/perceptual_error = false
 shader_parameter/bit_depth = 3
 shader_parameter/dither = true
 shader_parameter/subtractive = true
