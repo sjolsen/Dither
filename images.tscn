@@ -1,0 +1,51 @@
+[gd_scene format=3 uid="uid://durb0xlvv8sqo"]
+
+[ext_resource type="Shader" uid="uid://cwfgilfbovpte" path="res://gradient.gdshader" id="1_pjh5y"]
+[ext_resource type="Texture2D" uid="uid://dccqmpeaax4gn" path="res://icon.svg" id="2_hnvau"]
+[ext_resource type="Texture2D" uid="uid://c6kd4yvxxpi0g" path="res://images/5.3.01.png" id="3_w6or8"]
+[ext_resource type="Texture2D" uid="uid://c6aguaof544su" path="res://images/third_moment.png" id="4_lpykw"]
+[ext_resource type="Texture2D" uid="uid://c8jgqlc3qvyw6" path="res://images/computer_greyscale.png" id="5_16ny3"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_n2s2e"]
+shader = ExtResource("1_pjh5y")
+
+[node name="Control" type="Control" unique_id=876354538]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = -1152.0
+offset_bottom = -648.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Background" type="CanvasLayer" parent="." unique_id=42923485]
+
+[node name="Gradient" type="ColorRect" parent="Background" unique_id=76228947]
+material = SubResource("ShaderMaterial_n2s2e")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+metadata/_edit_lock_ = true
+
+[node name="Images" type="CanvasLayer" parent="." unique_id=971854814]
+
+[node name="Logo" type="Sprite2D" parent="Images" unique_id=1253100977]
+position = Vector2(153, 114)
+texture = ExtResource("2_hnvau")
+
+[node name="Male" type="Sprite2D" parent="Images" unique_id=1051093893]
+position = Vector2(811, 326)
+texture = ExtResource("3_w6or8")
+
+[node name="Third Moment" type="Sprite2D" parent="Images" unique_id=743779720]
+position = Vector2(391, 116)
+scale = Vector2(0.25, 0.25)
+texture = ExtResource("4_lpykw")
+
+[node name="Computer" type="Sprite2D" parent="Images" unique_id=915965962]
+position = Vector2(266, 404)
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("5_16ny3")

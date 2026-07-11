@@ -1,0 +1,50 @@
+[gd_scene format=3 uid="uid://c3dt8t2npy7wa"]
+
+[ext_resource type="Script" uid="uid://csiqdyrm4f2rv" path="res://dither.gd" id="1_pyidc"]
+[ext_resource type="PackedScene" uid="uid://durb0xlvv8sqo" path="res://images.tscn" id="2_vvh5c"]
+
+[sub_resource type="Environment" id="Environment_odaup"]
+
+[sub_resource type="CompositorEffect" id="CompositorEffect_fr75e"]
+resource_local_to_scene = false
+resource_name = ""
+enabled = true
+effect_callback_type = 4
+needs_motion_vectors = false
+needs_normal_roughness = false
+script = ExtResource("1_pyidc")
+metadata/_custom_type_script = "uid://csiqdyrm4f2rv"
+
+[sub_resource type="Compositor" id="Compositor_kbped"]
+compositor_effects = Array[CompositorEffect]([SubResource("CompositorEffect_fr75e")])
+
+[sub_resource type="QuadMesh" id="QuadMesh_odaup"]
+size = Vector2(1.778, 1)
+
+[sub_resource type="ViewportTexture" id="ViewportTexture_4xd8x"]
+viewport_path = NodePath("SubViewport")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_kwjyq"]
+resource_local_to_scene = true
+shading_mode = 0
+albedo_texture = SubResource("ViewportTexture_4xd8x")
+
+[node name="Node3D" type="Node3D" unique_id=713557295]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1077200194]
+environment = SubResource("Environment_odaup")
+compositor = SubResource("Compositor_kbped")
+
+[node name="Camera3D" type="Camera3D" parent="." unique_id=832926150]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.64782095)
+projection = 1
+
+[node name="SubViewport" type="SubViewport" parent="." unique_id=1912542674]
+disable_3d = true
+size = Vector2i(1152, 648)
+
+[node name="Images" parent="SubViewport" unique_id=876354538 instance=ExtResource("2_vvh5c")]
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=335672297]
+mesh = SubResource("QuadMesh_odaup")
+surface_material_override/0 = SubResource("StandardMaterial3D_kwjyq")
