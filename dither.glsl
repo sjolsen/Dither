@@ -2,10 +2,6 @@
 #version 450
 
 #define NTHREADS (1024)
-#define bit_depth (4)
-#define delta (1.0 / float((1u << bit_depth) - 1u))
-#define noise_order (1)
-#define noise_max (float(noise_order) * delta / 2.0)
 
 layout(local_size_x = 1, local_size_y = NTHREADS, local_size_z = 1) in;
 
@@ -13,7 +9,12 @@ layout(rgba16f, set = 0, binding = 0) uniform image2D color_image;
 
 layout(push_constant, std430) uniform Params {
 	ivec2 raster_size;
+	int bit_depth;
+	int noise_order;
 } params;
+
+#define delta (1.0 / float((1u << params.bit_depth) - 1u))
+#define noise_max (float(params.noise_order) * delta / 2.0)
 
 uvec3 pcg3d(uvec3 v) {
 	v = v * 1664525u + 1013904223u;
@@ -24,7 +25,7 @@ uvec3 pcg3d(uvec3 v) {
 }
 
 float sample_noise(uvec2 xy) {
-	if (noise_order == 0) {
+	if (params.noise_order == 0) {
 		return 0.0;
 	}
 
@@ -32,7 +33,7 @@ float sample_noise(uvec2 xy) {
 	uvec3 xyz = uvec3(xy, z);
 	vec3 noise = vec3(pcg3d(xyz)) / float(0u - 1u) - 0.5;
 	float result = 0.0;
-	for (int i = 0; i < noise_order; ++i) {
+	for (int i = 0; i < params.noise_order; ++i) {
 		result += noise[i];
 	}
 	return result;
