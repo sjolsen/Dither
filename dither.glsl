@@ -4,6 +4,8 @@
 #define NTHREADS (1024)
 #define bit_depth (3)
 #define delta (1.0 / float((1u << bit_depth) - 1u))
+#define noise_order (0)
+#define noise_max (float(noise_order) * delta / 2.0)
 
 layout(local_size_x = 1, local_size_y = NTHREADS, local_size_z = 1) in;
 
@@ -17,8 +19,32 @@ float luminance(vec3 c) {
 	return 0.2126 * c.r + 0.7152 * c.g + 0.0722 * c.b;
 }
 
-float quantize(float x) {
-	float y = delta * floor(x / delta + 0.5);
+uvec3 pcg3d(uvec3 v) {
+	v = v * 1664525u + 1013904223u;
+	v.x += v.y*v.z; v.y += v.z*v.x; v.z += v.x*v.y;
+	v ^= v >> 16u;
+	v.x += v.y*v.z; v.y += v.z*v.x; v.z += v.x*v.y;
+	return v;
+}
+
+float sample_noise(uvec2 xy) {
+	if (noise_order == 0) {
+		return 0.0;
+	}
+
+	uint z = 0u;
+	uvec3 xyz = uvec3(xy, z);
+	vec3 noise = vec3(pcg3d(xyz)) / float(0u - 1u) - 0.5;
+	float result = 0.0;
+	for (int i = 0; i < noise_order; ++i) {
+		result += noise[i];
+	}
+	return result;
+}
+
+float quantize(float x, float noise) {
+	float v = noise * delta;
+	float y = delta * floor((x + v) / delta + 0.5);
 	return clamp(y, 0.0, 1.0);
 }
 
@@ -55,8 +81,10 @@ void main() {
 
 		if (y >= 0) {
 			vec4 color = imageLoad(color_image, focus);
+			// TODO: Separate luminance conversion into a pre-pass
+			// and implement dynamic range compression
 			float gray = luminance(color.rgb);
-			float q = quantize(gray);
+			float q = quantize(gray, sample_noise(uvec2(x, y)));
 			float e = q - gray;
 			store_luminance(focus, q);
 			add_luminance(focus + ivec2(1, 0), -e * 7 / 16);
