@@ -38,9 +38,8 @@ func _render_callback(_callback_type: int, render_data: RenderData) -> void:
 	var buffers: RenderSceneBuffersRD = render_data.get_render_scene_buffers()
 
 	var size: Vector2i = buffers.get_internal_size()
-	var x_groups := (size.x - 1) / 8 + 1
-	var y_groups := (size.y - 1) / 8 + 1
-	var push_constant := PackedFloat32Array([size.x, size.y, 0.0, 0.0])
+	var push_constant := PackedInt32Array([size.x, size.y])
+	var pc := push_constant.to_byte_array()
 
 	for view in range(buffers.get_view_count()):
 		var image: RID = buffers.get_color_layer(view)
@@ -54,7 +53,6 @@ func _render_callback(_callback_type: int, render_data: RenderData) -> void:
 		var compute_list := _rd.compute_list_begin()
 		_rd.compute_list_bind_compute_pipeline(compute_list, _pipeline)
 		_rd.compute_list_bind_uniform_set(compute_list, uniform_set, 0)
-		var pc := push_constant.to_byte_array()
 		_rd.compute_list_set_push_constant(compute_list, pc, pc.size())
-		_rd.compute_list_dispatch(compute_list, x_groups, y_groups, 1)
+		_rd.compute_list_dispatch(compute_list, 1, 1, 1)
 		_rd.compute_list_end()
