@@ -1,23 +1,13 @@
 [gd_scene format=3 uid="uid://c3dt8t2npy7wa"]
 
-[ext_resource type="Script" uid="uid://csiqdyrm4f2rv" path="res://dither.gd" id="1_pyidc"]
+[ext_resource type="CompositorEffect" uid="uid://dgsjfxlxfk0tw" path="res://dither.tres" id="1_vvh5c"]
 [ext_resource type="Script" uid="uid://cbjro55803u8k" path="res://capture.gd" id="2_28aoi"]
 [ext_resource type="PackedScene" uid="uid://durb0xlvv8sqo" path="res://images.tscn" id="2_vvh5c"]
 
 [sub_resource type="Environment" id="Environment_odaup"]
 
-[sub_resource type="CompositorEffect" id="CompositorEffect_fr75e"]
-resource_local_to_scene = false
-resource_name = ""
-enabled = true
-effect_callback_type = 4
-needs_motion_vectors = false
-needs_normal_roughness = false
-script = ExtResource("1_pyidc")
-metadata/_custom_type_script = "uid://csiqdyrm4f2rv"
-
 [sub_resource type="Compositor" id="Compositor_kbped"]
-compositor_effects = Array[CompositorEffect]([SubResource("CompositorEffect_fr75e")])
+compositor_effects = Array[CompositorEffect]([ExtResource("1_vvh5c")])
 
 [sub_resource type="QuadMesh" id="QuadMesh_odaup"]
 size = Vector2(1.778, 1)

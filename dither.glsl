@@ -12,10 +12,26 @@ layout(push_constant, std430) uniform Params {
 	ivec2 raster_size;
 	int bit_depth;
 	int noise_order;
+	int dynamic_range_compression;
+	int show_error;
 } params;
 
 #define delta (1.0 / float((1u << params.bit_depth) - 1u))
 #define noise_max (float(params.noise_order) * delta / 2.0)
+
+float luminance(vec3 c) {
+	return 0.2126 * c.r + 0.7152 * c.g + 0.0722 * c.b;
+}
+
+float unquantized_input(ivec2 focus) {
+	vec4 color = imageLoad(color_image, focus);
+	float l = luminance(color.rgb);
+	if (bool(params.dynamic_range_compression)) {
+		return mix(noise_max, 1.0 - noise_max, l);
+	} else {
+		return l;
+	}
+}
 
 uvec3 pcg3d(uvec3 v) {
 	v = v * 1664525u + 1013904223u;
@@ -71,7 +87,16 @@ void main() {
 			float gray = imageLoad(dither_buffer, focus).r;
 			float q = quantize(gray, sample_noise(uvec2(x, y)));
 			float e = q - gray;
-			imageStore(color_image, focus, vec4(q, q, q, 1.0));
+
+			if (bool(params.show_error)) {
+				float original = unquantized_input(focus);
+				float err = q - original;
+				float l = 0.5 + 1.4 * err;
+				imageStore(color_image, focus, vec4(l, l, l, 1.0));
+			} else {
+				imageStore(color_image, focus, vec4(q, q, q, 1.0));
+			}
+
 			diffuse_error(focus + ivec2( 1, 0), e * -0.5090);
 			diffuse_error(focus + ivec2( 2, 0), e *  0.1008);
 			diffuse_error(focus + ivec2( 3, 0), e * -0.0009);

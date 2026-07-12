@@ -3,12 +3,19 @@ extends CompositorEffect
 class_name Dither
 
 
+@export_range(1, 8)
+var bit_depth: int = 3
+@export_range(0, 2)
+var noise_order: int = 1
+@export
+var dynamic_range_compression: bool = false
+@export
+var show_error: bool = false
+
 var _rd := RenderingServer.get_rendering_device()
 var _pretreat := ComputeShader.new("res://pretreat.glsl")
 var _dither := ComputeShader.new("res://dither.glsl")
 var _buffer := DitherBuffer.new()
-var _bit_depth: int = 3
-var _noise_order: int = 1
 
 
 func _init() -> void:
@@ -34,8 +41,10 @@ func _render_callback(_callback_type: int, render_data: RenderData) -> void:
 		cpass.push_constant = PackedInt32Array([
 			cpass.size.x,
 			cpass.size.y,
-			_bit_depth,
-			_noise_order,
+			bit_depth,
+			noise_order,
+			int(dynamic_range_compression),
+			int(show_error),
 		]).to_byte_array()
 		cpass.dither_buffer = _buffer.grab(cpass.size)
 
