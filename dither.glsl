@@ -2,7 +2,7 @@
 #version 450
 
 #define NTHREADS (1024)
-#define bit_depth (3)
+#define bit_depth (4)
 #define delta (1.0 / float((1u << bit_depth) - 1u))
 #define noise_order (1)
 #define noise_max (float(noise_order) * delta / 2.0)
@@ -14,10 +14,6 @@ layout(rgba16f, set = 0, binding = 0) uniform image2D color_image;
 layout(push_constant, std430) uniform Params {
 	ivec2 raster_size;
 } params;
-
-float luminance(vec3 c) {
-	return 0.2126 * c.r + 0.7152 * c.g + 0.0722 * c.b;
-}
 
 uvec3 pcg3d(uvec3 v) {
 	v = v * 1664525u + 1013904223u;
@@ -60,8 +56,7 @@ void add_luminance(ivec2 focus, float d) {
 	ivec2 size = ivec2(params.raster_size);
 	if (0 <= focus.y && focus.y < size.y) {
 		vec4 color = imageLoad(color_image, focus);
-		float l = luminance(color.rgb) + d;
-		color.rgb = vec3(l);
+		color.rgb = color.rgb + vec3(d);
 		imageStore(color_image, focus, color);
 	}
 }
@@ -81,9 +76,7 @@ void main() {
 
 		if (y >= 0) {
 			vec4 color = imageLoad(color_image, focus);
-			// TODO: Separate luminance conversion into a pre-pass
-			// and implement dynamic range compression
-			float gray = luminance(color.rgb);
+			float gray = color.r;
 			float q = quantize(gray, sample_noise(uvec2(x, y)));
 			float e = q - gray;
 			store_luminance(focus, q);

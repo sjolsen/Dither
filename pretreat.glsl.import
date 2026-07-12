@@ -1,0 +1,14 @@
+[remap]
+
+importer="glsl"
+type="RDShaderFile"
+uid="uid://1rfruci36w3g"
+path="res://.godot/imported/pretreat.glsl-83c7a017172f96360da1441cdb483d6a.res"
+
+[deps]
+
+source_file="res://pretreat.glsl"
+dest_files=["res://.godot/imported/pretreat.glsl-83c7a017172f96360da1441cdb483d6a.res"]
+
+[params]
+
