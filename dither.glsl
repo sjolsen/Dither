@@ -4,7 +4,7 @@
 #define NTHREADS (1024)
 #define bit_depth (3)
 #define delta (1.0 / float((1u << bit_depth) - 1u))
-#define noise_order (0)
+#define noise_order (1)
 #define noise_max (float(noise_order) * delta / 2.0)
 
 layout(local_size_x = 1, local_size_y = NTHREADS, local_size_z = 1) in;
@@ -67,7 +67,7 @@ void add_luminance(ivec2 focus, float d) {
 }
 
 void main() {
-	const int skew = 2;
+	const int skew = 4;
 	ivec2 size = ivec2(params.raster_size);
 	int id = int(gl_GlobalInvocationID.y);
 
@@ -87,10 +87,30 @@ void main() {
 			float q = quantize(gray, sample_noise(uvec2(x, y)));
 			float e = q - gray;
 			store_luminance(focus, q);
-			add_luminance(focus + ivec2(1, 0), -e * 7 / 16);
-			add_luminance(focus + ivec2(-1, 1), -e * 3 / 16);
-			add_luminance(focus + ivec2(0, 1), -e * 5 / 16);
-			add_luminance(focus + ivec2(1, 1), -e * 1 / 16);
+			add_luminance(focus + ivec2( 1, 0), e * -0.5090);
+			add_luminance(focus + ivec2( 2, 0), e *  0.1008);
+			add_luminance(focus + ivec2( 3, 0), e * -0.0009);
+			add_luminance(focus + ivec2(-3, 1), e *  0.0015);
+			add_luminance(focus + ivec2(-2, 1), e *  0.0057);
+			add_luminance(focus + ivec2(-1, 1), e * -0.2549);
+			add_luminance(focus + ivec2( 0, 1), e * -0.3802);
+			add_luminance(focus + ivec2( 1, 1), e * -0.0180);
+			add_luminance(focus + ivec2( 2, 1), e *  0.0834);
+			add_luminance(focus + ivec2( 3, 1), e * -0.0255);
+			add_luminance(focus + ivec2(-3, 2), e * -0.0082);
+			add_luminance(focus + ivec2(-2, 2), e *  0.0447);
+			add_luminance(focus + ivec2(-1, 2), e *  0.1114);
+			add_luminance(focus + ivec2( 0, 2), e *  0.1007);
+			add_luminance(focus + ivec2( 1, 2), e *  0.0627);
+			add_luminance(focus + ivec2( 2, 2), e * -0.0106);
+			add_luminance(focus + ivec2( 3, 2), e * -0.0154);
+			add_luminance(focus + ivec2(-3, 3), e * -0.0035);
+			add_luminance(focus + ivec2(-2, 3), e * -0.0256);
+			add_luminance(focus + ivec2(-1, 3), e * -0.0244);
+			add_luminance(focus + ivec2( 0, 3), e * -0.0193);
+			add_luminance(focus + ivec2( 1, 3), e * -0.0234);
+			add_luminance(focus + ivec2( 2, 3), e * -0.0111);
+			add_luminance(focus + ivec2( 3, 3), e *  0.0077);
 		}
 
 		if (++x == size.x) {
