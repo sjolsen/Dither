@@ -4,6 +4,7 @@
 layout(local_size_x = 32, local_size_y = 32, local_size_z = 1) in;
 
 layout(rgba16f, set = 0, binding = 0) uniform image2D color_image;
+layout(r32f, set = 0, binding = 1) uniform image2D dither_buffer;
 
 layout(push_constant, std430) uniform Params {
 	ivec2 raster_size;
@@ -26,7 +27,6 @@ void main() {
 		vec4 color = imageLoad(color_image, id);
 		float l = luminance(color.rgb);
 		l = mix(noise_max, 1.0 - noise_max, l);
-		color.rgb = vec3(l);
-		imageStore(color_image, id, color);
+		imageStore(dither_buffer, id, vec4(l));
 	}
 }
