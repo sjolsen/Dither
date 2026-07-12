@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://c3dt8t2npy7wa"]
 
 [ext_resource type="Script" uid="uid://csiqdyrm4f2rv" path="res://dither.gd" id="1_pyidc"]
+[ext_resource type="Script" uid="uid://cbjro55803u8k" path="res://capture.gd" id="2_28aoi"]
 [ext_resource type="PackedScene" uid="uid://durb0xlvv8sqo" path="res://images.tscn" id="2_vvh5c"]
 
 [sub_resource type="Environment" id="Environment_odaup"]
@@ -38,6 +39,9 @@ compositor = SubResource("Compositor_kbped")
 [node name="Camera3D" type="Camera3D" parent="." unique_id=832926150]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.64782095)
 projection = 1
+
+[node name="Capture" type="Node" parent="." unique_id=1347355981]
+script = ExtResource("2_28aoi")
 
 [node name="SubViewport" type="SubViewport" parent="." unique_id=1912542674]
 disable_3d = true
