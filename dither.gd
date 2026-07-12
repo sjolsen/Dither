@@ -80,9 +80,16 @@ func _run_pretreat(cpass: _Pass) -> void:
 
 
 func _run_dither(cpass: _Pass) -> void:
+	var block_size := 16
+	var skew := 4
+	var stripes := (cpass.size.y + (block_size - 1)) / block_size
+	var x_size := stripes * cpass.size.x
+	var u_size := x_size + (block_size - 1) * skew
+	var wg_x := (u_size + (block_size - 1)) / block_size
+
 	_rd.compute_list_bind_compute_pipeline(cpass.compute_list, _dither.pipeline)
 	_rd.compute_list_bind_uniform_set(
 		cpass.compute_list, _uniforms(cpass, _dither.shader), 0)
 	_rd.compute_list_set_push_constant(
 		cpass.compute_list, cpass.push_constant, cpass.push_constant.size())
-	_rd.compute_list_dispatch(cpass.compute_list, 1, 1, 1)
+	_rd.compute_list_dispatch(cpass.compute_list, wg_x, 1, 1)

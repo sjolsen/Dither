@@ -1,9 +1,10 @@
 #[compute]
 #version 450
 
-#define NTHREADS (1024)
+#define BLOCK_SIZE (16)
+#define SKEW (4)
 
-layout(local_size_x = 1, local_size_y = NTHREADS, local_size_z = 1) in;
+layout(local_size_x = 1, local_size_y = BLOCK_SIZE, local_size_z = 1) in;
 
 layout(rgba16f, set = 0, binding = 0) uniform image2D color_image;
 layout(r32f, set = 0, binding = 1) uniform image2D dither_buffer;
@@ -62,30 +63,54 @@ float quantize(float x, float noise) {
 	return clamp(y, 0.0, 1.0);
 }
 
+ivec2 uv_to_xy(ivec2 uv) {
+	ivec2 size = ivec2(params.raster_size);
+	int u_skewed = uv.x - uv.y * SKEW;
+	int x = u_skewed % size.x;
+	int y = BLOCK_SIZE * ((u_skewed - x) / size.x) + uv.y;
+	return ivec2(x, y);
+}
+
+ivec2 xy_to_uv(ivec2 xy) {
+	ivec2 size = ivec2(params.raster_size);
+	int v = xy.y % BLOCK_SIZE;
+	int u_skewed = xy.x + ((xy.y - v) / BLOCK_SIZE) * size.x;
+	int u = u_skewed + v * SKEW;
+	return ivec2(u, v);
+}
+
+bool in_block(ivec2 xy) {
+	ivec2 size = ivec2(params.raster_size);
+	ivec2 uv = xy_to_uv(xy);
+	int u_start = int(gl_WorkGroupID.x) * BLOCK_SIZE;
+	int u_end = u_start + BLOCK_SIZE;
+	return (0 <= xy.x && xy.x < size.x &&
+		0 <= xy.y && xy.y < size.y &&
+		u_start <= uv.x && uv.x < u_end &&
+		0 <= uv.y && uv.y < BLOCK_SIZE);
+}
+
 void diffuse_error(ivec2 focus, float d) {
 	ivec2 size = ivec2(params.raster_size);
-	if (0 <= focus.y && focus.y < size.y) {
+	if (in_block(focus)) {
 		float l = imageLoad(dither_buffer, focus).r;
 		imageStore(dither_buffer, focus, vec4(l + d));
 	}
 }
 
 void main() {
-	const int skew = 4;
 	ivec2 size = ivec2(params.raster_size);
-	int id = int(gl_GlobalInvocationID.y);
 
 	// Break the image up into horizontal stripes and march through the
 	// stripes on a diagonal.
-	int i = 0 - id * skew;
-	int x = i % size.x;
-	int y = NTHREADS * ((i - x) / size.x) + id;
-	while (y < size.y) {
-		ivec2 focus = ivec2(x, y);
+	for (int i = 0; i < BLOCK_SIZE; ++i) {
+		int u = int(gl_WorkGroupID.x) * BLOCK_SIZE + i;
+		int v = int(gl_LocalInvocationID.y);
+		ivec2 focus = uv_to_xy(ivec2(u, v));
 
-		if (y >= 0) {
+		if (in_block(focus)) {
 			float gray = imageLoad(dither_buffer, focus).r;
-			float q = quantize(gray, sample_noise(uvec2(x, y)));
+			float q = quantize(gray, sample_noise(focus));
 			float e = q - gray;
 
 			if (bool(params.show_error)) {
@@ -121,11 +146,6 @@ void main() {
 			diffuse_error(focus + ivec2( 1, 3), e * -0.0234);
 			diffuse_error(focus + ivec2( 2, 3), e * -0.0111);
 			diffuse_error(focus + ivec2( 3, 3), e *  0.0077);
-		}
-
-		if (++x == size.x) {
-			x = 0;
-			y += NTHREADS;
 		}
 	}
 }
