@@ -13,6 +13,7 @@ layout(push_constant, std430) uniform Params {
 	ivec2 raster_size;
 	int bit_depth;
 	int noise_order;
+	int error_diffusion;
 	int timestamp;
 	int dynamic_range_compression;
 	int show_error;
@@ -123,30 +124,32 @@ void main() {
 				imageStore(color_image, focus, vec4(q, q, q, 1.0));
 			}
 
-			diffuse_error(focus + ivec2( 1, 0), e * -0.5090);
-			diffuse_error(focus + ivec2( 2, 0), e *  0.1008);
-			diffuse_error(focus + ivec2( 3, 0), e * -0.0009);
-			diffuse_error(focus + ivec2(-3, 1), e *  0.0015);
-			diffuse_error(focus + ivec2(-2, 1), e *  0.0057);
-			diffuse_error(focus + ivec2(-1, 1), e * -0.2549);
-			diffuse_error(focus + ivec2( 0, 1), e * -0.3802);
-			diffuse_error(focus + ivec2( 1, 1), e * -0.0180);
-			diffuse_error(focus + ivec2( 2, 1), e *  0.0834);
-			diffuse_error(focus + ivec2( 3, 1), e * -0.0255);
-			diffuse_error(focus + ivec2(-3, 2), e * -0.0082);
-			diffuse_error(focus + ivec2(-2, 2), e *  0.0447);
-			diffuse_error(focus + ivec2(-1, 2), e *  0.1114);
-			diffuse_error(focus + ivec2( 0, 2), e *  0.1007);
-			diffuse_error(focus + ivec2( 1, 2), e *  0.0627);
-			diffuse_error(focus + ivec2( 2, 2), e * -0.0106);
-			diffuse_error(focus + ivec2( 3, 2), e * -0.0154);
-			diffuse_error(focus + ivec2(-3, 3), e * -0.0035);
-			diffuse_error(focus + ivec2(-2, 3), e * -0.0256);
-			diffuse_error(focus + ivec2(-1, 3), e * -0.0244);
-			diffuse_error(focus + ivec2( 0, 3), e * -0.0193);
-			diffuse_error(focus + ivec2( 1, 3), e * -0.0234);
-			diffuse_error(focus + ivec2( 2, 3), e * -0.0111);
-			diffuse_error(focus + ivec2( 3, 3), e *  0.0077);
+			if (bool(params.error_diffusion)) {
+				diffuse_error(focus + ivec2( 1, 0), e * -0.5090);
+				diffuse_error(focus + ivec2( 2, 0), e *  0.1008);
+				diffuse_error(focus + ivec2( 3, 0), e * -0.0009);
+				diffuse_error(focus + ivec2(-3, 1), e *  0.0015);
+				diffuse_error(focus + ivec2(-2, 1), e *  0.0057);
+				diffuse_error(focus + ivec2(-1, 1), e * -0.2549);
+				diffuse_error(focus + ivec2( 0, 1), e * -0.3802);
+				diffuse_error(focus + ivec2( 1, 1), e * -0.0180);
+				diffuse_error(focus + ivec2( 2, 1), e *  0.0834);
+				diffuse_error(focus + ivec2( 3, 1), e * -0.0255);
+				diffuse_error(focus + ivec2(-3, 2), e * -0.0082);
+				diffuse_error(focus + ivec2(-2, 2), e *  0.0447);
+				diffuse_error(focus + ivec2(-1, 2), e *  0.1114);
+				diffuse_error(focus + ivec2( 0, 2), e *  0.1007);
+				diffuse_error(focus + ivec2( 1, 2), e *  0.0627);
+				diffuse_error(focus + ivec2( 2, 2), e * -0.0106);
+				diffuse_error(focus + ivec2( 3, 2), e * -0.0154);
+				diffuse_error(focus + ivec2(-3, 3), e * -0.0035);
+				diffuse_error(focus + ivec2(-2, 3), e * -0.0256);
+				diffuse_error(focus + ivec2(-1, 3), e * -0.0244);
+				diffuse_error(focus + ivec2( 0, 3), e * -0.0193);
+				diffuse_error(focus + ivec2( 1, 3), e * -0.0234);
+				diffuse_error(focus + ivec2( 2, 3), e * -0.0111);
+				diffuse_error(focus + ivec2( 3, 3), e *  0.0077);
+			}
 		}
 	}
 }

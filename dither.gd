@@ -8,6 +8,8 @@ var bit_depth: int = 3
 @export_range(0, 2)
 var noise_order: int = 1
 @export
+var error_diffusion: bool = true
+@export
 var time_varying_noise: bool = false
 @export
 var dynamic_range_compression: bool = false
@@ -46,11 +48,11 @@ func _render_callback(_callback_type: int, render_data: RenderData) -> void:
 			cpass.size.y,
 			bit_depth,
 			noise_order,
+			int(error_diffusion),
 			_timestamp if time_varying_noise else 0,
 			int(dynamic_range_compression),
 			int(show_error),
 		]).to_byte_array()
-		_timestamp += 1
 		cpass.dither_buffer = _buffer.grab(cpass.size)
 
 		cpass.compute_list = _rd.compute_list_begin()
@@ -58,6 +60,7 @@ func _render_callback(_callback_type: int, render_data: RenderData) -> void:
 		_rd.compute_list_add_barrier(cpass.compute_list)
 		_run_dither(cpass)
 		_rd.compute_list_end()
+	_timestamp += 1
 
 
 func _uniforms(cpass: _Pass, shader: RID) -> RID:
