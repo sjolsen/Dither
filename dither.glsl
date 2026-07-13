@@ -2,7 +2,6 @@
 #version 450
 
 #define BLOCK_SIZE (16)
-#define SKEW (4)
 
 layout(local_size_x = 1, local_size_y = BLOCK_SIZE, local_size_z = 1) in;
 
@@ -21,6 +20,49 @@ layout(push_constant, std430) uniform Params {
 
 #define delta (1.0 / float((1u << params.bit_depth) - 1u))
 #define noise_max (float(params.noise_order) * delta / 2.0)
+
+#define KERNEL_NONE (0)
+#define KERNEL_FLOYD_STEINBERG (1)
+#define KERNEL_ATKINSON (2)
+#define KERNEL_OPTIMAL (3)
+
+#define KERNEL (params.error_diffusion)
+
+const int kernel_size[] = {0, 4, 6, 24};
+const int kernel_skew[] = {0, 2, 2, 4};
+
+const int kernel_x[][24] = {
+	{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+	{1, -1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+	{1, 2, -1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+	{1, 2, 3, -3, -2, -1, 0, 1, 2, 3, -3, -2, -1, 0, 1, 2, 3, -3, -2, -1, 0, 1, 2, 3},
+};
+
+const int kernel_y[][24] = {
+	{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+	{0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+	{0, 0, 1, 1, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+	{0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3},
+};
+
+const float kernel_k[][24] = {
+	{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+	{
+		-7.0 / 16.0, -3.0 / 16.0, -5.0 / 16.0, -1.0 / 16.0, 0, 0, 0, 0,
+		0, 0, 0, 0, 0, 0, 0, 0,
+		0, 0, 0, 0, 0, 0, 0, 0,
+	},
+	{
+		-0.125, -0.125, -0.125, -0.125, -0.125, -0.125, 0, 0,
+		0, 0, 0, 0, 0, 0, 0, 0,
+		0, 0, 0, 0, 0, 0, 0, 0,
+	},
+	{
+		-0.5090, 0.1008, -0.0009, 0.0015, 0.0057, -0.2549, -0.3802, -0.0180,
+		0.0834, -0.0255, -0.0082, 0.0447, 0.1114, 0.1007, 0.0627, -0.0106,
+		-0.0154, -0.0035, -0.0256, -0.0244, -0.0193, -0.0234, -0.0111, 0.0077,
+	},
+};
 
 float luminance(vec3 c) {
 	return 0.2126 * c.r + 0.7152 * c.g + 0.0722 * c.b;
@@ -67,7 +109,7 @@ float quantize(float x, float noise) {
 
 ivec2 uv_to_xy(ivec2 uv) {
 	ivec2 size = ivec2(params.raster_size);
-	int u_skewed = uv.x - uv.y * SKEW;
+	int u_skewed = uv.x - uv.y * kernel_skew[KERNEL];
 	int x = u_skewed % size.x;
 	int y = BLOCK_SIZE * ((u_skewed - x) / size.x) + uv.y;
 	return ivec2(x, y);
@@ -77,7 +119,7 @@ ivec2 xy_to_uv(ivec2 xy) {
 	ivec2 size = ivec2(params.raster_size);
 	int v = xy.y % BLOCK_SIZE;
 	int u_skewed = xy.x + ((xy.y - v) / BLOCK_SIZE) * size.x;
-	int u = u_skewed + v * SKEW;
+	int u = u_skewed + v * kernel_skew[KERNEL];
 	return ivec2(u, v);
 }
 
@@ -125,30 +167,11 @@ void main() {
 			}
 
 			if (bool(params.error_diffusion)) {
-				diffuse_error(focus + ivec2( 1, 0), e * -0.5090);
-				diffuse_error(focus + ivec2( 2, 0), e *  0.1008);
-				diffuse_error(focus + ivec2( 3, 0), e * -0.0009);
-				diffuse_error(focus + ivec2(-3, 1), e *  0.0015);
-				diffuse_error(focus + ivec2(-2, 1), e *  0.0057);
-				diffuse_error(focus + ivec2(-1, 1), e * -0.2549);
-				diffuse_error(focus + ivec2( 0, 1), e * -0.3802);
-				diffuse_error(focus + ivec2( 1, 1), e * -0.0180);
-				diffuse_error(focus + ivec2( 2, 1), e *  0.0834);
-				diffuse_error(focus + ivec2( 3, 1), e * -0.0255);
-				diffuse_error(focus + ivec2(-3, 2), e * -0.0082);
-				diffuse_error(focus + ivec2(-2, 2), e *  0.0447);
-				diffuse_error(focus + ivec2(-1, 2), e *  0.1114);
-				diffuse_error(focus + ivec2( 0, 2), e *  0.1007);
-				diffuse_error(focus + ivec2( 1, 2), e *  0.0627);
-				diffuse_error(focus + ivec2( 2, 2), e * -0.0106);
-				diffuse_error(focus + ivec2( 3, 2), e * -0.0154);
-				diffuse_error(focus + ivec2(-3, 3), e * -0.0035);
-				diffuse_error(focus + ivec2(-2, 3), e * -0.0256);
-				diffuse_error(focus + ivec2(-1, 3), e * -0.0244);
-				diffuse_error(focus + ivec2( 0, 3), e * -0.0193);
-				diffuse_error(focus + ivec2( 1, 3), e * -0.0234);
-				diffuse_error(focus + ivec2( 2, 3), e * -0.0111);
-				diffuse_error(focus + ivec2( 3, 3), e *  0.0077);
+				for (int i = 0; i < kernel_size[KERNEL]; ++i) {
+					ivec2 offset = ivec2(kernel_x[KERNEL][i], kernel_y[KERNEL][i]);
+					float k = kernel_k[KERNEL][i];
+					diffuse_error(focus + offset, e * k);
+				}
 			}
 		}
 	}

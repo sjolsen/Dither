@@ -3,12 +3,20 @@ extends CompositorEffect
 class_name Dither
 
 
+enum Kernel {
+	NONE = 0,
+	FLOYD_STEINBERG = 1,
+	ATKINSON = 2,
+	OPTIMAL = 3,
+}
+
+
 @export_range(1, 8)
 var bit_depth: int = 3
 @export_range(0, 2)
 var noise_order: int = 1
 @export
-var error_diffusion: bool = true
+var error_diffusion: Kernel = Kernel.OPTIMAL
 @export
 var time_varying_noise: bool = false
 @export
