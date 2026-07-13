@@ -10,6 +10,7 @@ layout(push_constant, std430) uniform Params {
 	ivec2 raster_size;
 	int bit_depth;
 	int noise_order;
+	int timestamp;
 	int dynamic_range_compression;
 	int show_error;
 } params;

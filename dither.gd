@@ -8,6 +8,8 @@ var bit_depth: int = 3
 @export_range(0, 2)
 var noise_order: int = 1
 @export
+var time_varying_noise: bool = false
+@export
 var dynamic_range_compression: bool = false
 @export
 var show_error: bool = false
@@ -16,6 +18,7 @@ var _rd := RenderingServer.get_rendering_device()
 var _pretreat := ComputeShader.new("res://pretreat.glsl")
 var _dither := ComputeShader.new("res://dither.glsl")
 var _buffer := DitherBuffer.new()
+var _timestamp := 0
 
 
 func _init() -> void:
@@ -43,9 +46,11 @@ func _render_callback(_callback_type: int, render_data: RenderData) -> void:
 			cpass.size.y,
 			bit_depth,
 			noise_order,
+			_timestamp if time_varying_noise else 0,
 			int(dynamic_range_compression),
 			int(show_error),
 		]).to_byte_array()
+		_timestamp += 1
 		cpass.dither_buffer = _buffer.grab(cpass.size)
 
 		cpass.compute_list = _rd.compute_list_begin()

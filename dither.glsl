@@ -13,6 +13,7 @@ layout(push_constant, std430) uniform Params {
 	ivec2 raster_size;
 	int bit_depth;
 	int noise_order;
+	int timestamp;
 	int dynamic_range_compression;
 	int show_error;
 } params;
@@ -47,7 +48,7 @@ float sample_noise(uvec2 xy) {
 		return 0.0;
 	}
 
-	uint z = 0u;
+	uint z = uint(params.timestamp);
 	uvec3 xyz = uvec3(xy, z);
 	vec3 noise = vec3(pcg3d(xyz)) / float(0u - 1u) - 0.5;
 	float result = 0.0;
