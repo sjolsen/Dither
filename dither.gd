@@ -95,9 +95,12 @@ func _run_pretreat(cpass: _Pass) -> void:
 	_rd.compute_list_dispatch(cpass.compute_list, wg_x, wg_y, 1)
 
 
+const _kernel_skew: Array[int] = [0, 2, 2, 4]
+
+
 func _run_dither(cpass: _Pass) -> void:
 	var block_size := 16
-	var skew := 4
+	var skew := _kernel_skew[error_diffusion]
 	var stripes := (cpass.size.y + (block_size - 1)) / block_size
 	var x_size := stripes * cpass.size.x
 	var u_size := x_size + (block_size - 1) * skew

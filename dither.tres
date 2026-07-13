@@ -10,4 +10,5 @@ effect_callback_type = 4
 needs_motion_vectors = false
 needs_normal_roughness = false
 script = ExtResource("1_jepbl")
+noise_order = 0
 metadata/_custom_type_script = "uid://csiqdyrm4f2rv"
