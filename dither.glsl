@@ -130,8 +130,7 @@ bool in_block(ivec2 xy) {
 	int u_end = u_start + BLOCK_SIZE;
 	return (0 <= xy.x && xy.x < size.x &&
 		0 <= xy.y && xy.y < size.y &&
-		u_start <= uv.x && uv.x < u_end &&
-		0 <= uv.y && uv.y < BLOCK_SIZE);
+		u_start <= uv.x && uv.x < u_end);
 }
 
 void diffuse_error(ivec2 focus, float d) {
@@ -171,6 +170,7 @@ void main() {
 					ivec2 offset = ivec2(kernel_x[KERNEL][i], kernel_y[KERNEL][i]);
 					float k = kernel_k[KERNEL][i];
 					diffuse_error(focus + offset, e * k);
+					barrier();
 				}
 			}
 		}
