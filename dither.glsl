@@ -6,7 +6,7 @@
 layout(local_size_x = 1, local_size_y = BLOCK_SIZE, local_size_z = 1) in;
 
 layout(rgba16f, set = 0, binding = 0) uniform image2D color_image;
-layout(r32f, set = 0, binding = 1) uniform image2D dither_buffer;
+layout(r32f, set = 0, binding = 1) uniform coherent image2D dither_buffer;
 
 layout(push_constant, std430) uniform Params {
 	ivec2 raster_size;
