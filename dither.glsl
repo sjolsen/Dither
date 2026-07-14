@@ -150,11 +150,13 @@ void main() {
 		int u = int(gl_WorkGroupID.x) * BLOCK_SIZE + i;
 		int v = int(gl_LocalInvocationID.y);
 		ivec2 focus = uv_to_xy(ivec2(u, v));
+                bool valid = in_block(focus);
+		float e;
 
-		if (in_block(focus)) {
+		if (valid) {
 			float gray = imageLoad(dither_buffer, focus).r;
 			float q = quantize(gray, sample_noise(focus));
-			float e = q - gray;
+			e = q - gray;
 
 			if (bool(params.show_error)) {
 				float original = unquantized_input(focus);
@@ -164,14 +166,16 @@ void main() {
 			} else {
 				imageStore(color_image, focus, vec4(q, q, q, 1.0));
 			}
+		}
 
-			if (bool(params.error_diffusion)) {
-				for (int i = 0; i < kernel_size[KERNEL]; ++i) {
+		if (bool(params.error_diffusion)) {
+			for (int i = 0; i < kernel_size[KERNEL]; ++i) {
+				if (valid) {
 					ivec2 offset = ivec2(kernel_x[KERNEL][i], kernel_y[KERNEL][i]);
 					float k = kernel_k[KERNEL][i];
 					diffuse_error(focus + offset, e * k);
-					barrier();
 				}
+				barrier();
 			}
 		}
 	}
